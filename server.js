@@ -10,21 +10,26 @@ const path = require('path');
 // 禁用 punycode 警告
 process.removeAllListeners('warning');
 
+// 首先定义所有中间件
 app.use(cors());
 app.use(express.json());
 
-// 修改静态文件服务配置
-app.use(express.static('public')); 
-
-// 添加根路由处理
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+// 定义 limiter
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+    message: { 
+        success: false, 
+        message: 'Too many requests. Please try again in 1 hour. / 请求次数过多，请1小时后再试。' 
+    },
+    standardHeaders: true,
+    legacyHeaders: false,
 });
 
-// 应用限速器到发送邮件的路由
+// 应用 limiter 到邮件路由
 app.use('/send-email', limiter);
 
-// 发送邮件的路由
+// 邮件发送路由
 app.post('/send-email', async (req, res) => {
     try {
         const { name, email, phone, message, honeypot } = req.body;
@@ -96,11 +101,28 @@ app.post('/send-email', async (req, res) => {
     }
 });
 
-// 404 处理 - 放在所有路由之后
+// 静态文件服务务必在动态路由之后
+app.use(express.static('public'));
+
+// 根路由处理
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// 404 处理放在最后
 app.use((req, res) => {
     res.status(404).json({ 
         success: false, 
         message: 'Route not found / 路由未找到' 
+    });
+});
+
+// 错误处理中间件
+app.use((err, req, res, next) => {
+    console.error('Server error:', err);
+    res.status(500).json({ 
+        success: false, 
+        message: 'Internal server error / 服务器内部错误' 
     });
 });
 
@@ -151,27 +173,6 @@ async function verifyTransporter() {
         throw error;
     }
 }
-
-// 创建限速器
-const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000,  // 15分钟
-    max: 100,                   // 更大的请求次数限制
-    message: { 
-        success: false, 
-        message: 'Too many requests. Please try again in 1 hour. / 请求次数过多，请1小时后再试。' 
-    },
-    standardHeaders: true,      // 返回 `RateLimit-*` 头信息
-    legacyHeaders: false,       // 禁用 `X-RateLimit-*` 头信息
-});
-
-// 错误处理中间件
-app.use((err, req, res, next) => {
-    console.error('Server error:', err);
-    res.status(500).json({ 
-        success: false, 
-        message: 'Internal server error / 服务器内部错误' 
-    });
-});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

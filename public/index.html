@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Domain For Sale</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="header">
+        <div class="sale-badge">
+            <span>Sale</span>
+        </div>
+        <div class="header-content">
+            <h1>YOUR DOMAIN NAME</h1>
+            <h2 class="subtitle">您的域名</h2>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <h2>This Domain Is For Sale Only For 199 $</h2>
+        <h3 class="chinese-text">此域名仅售 199 美元</h3>
+        <button id="contactBtn">Contact Seller By E-mail / 通过邮件联系卖家</button>
+    </div>
+
+    <div class="stats">
+        <div class="stat-item">
+            <h3>23K</h3>
+            <p>Alexa Rank</p>
+            <p class="chinese-text">Alexa 排名</p>
+        </div>
+        <div class="stat-item">
+            <h3>05</h3>
+            <p>Google Page Rank</p>
+            <p class="chinese-text">谷歌页面排名</p>
+        </div>
+        <div class="stat-item">
+            <h3>12</h3>
+            <p>Years Old Domain</p>
+            <p class="chinese-text">域名年限</p>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="more-domains">
+            <h3>More Domains / 更多域名</h3>
+            <ul>
+                <li>www.justadomian.com</li>
+                <li>www.doityourdomain.com</li>
+                <li>www.buytemplatedomain.com</li>
+            </ul>
+        </div>
+        <div class="about-seller">
+            <h3>About Seller / 关于卖家</h3>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+            <p class="chinese-text">专业域名交易服务商，提供安全可靠的域名交易服务。</p>
+        </div>
+    </div>
+
+    <!-- Modal Contact Form -->
+    <div id="contactModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="form-header">
+                <h2>Contact Us / 联系我们</h2>
+                <p>Please fill out the form below to inquire about this domain</p>
+                <p class="chinese-text">请填写以下表单询问域名详情</p>
+                <div id="formError" class="error-message" style="display: none; color: #ff4444; margin: 10px 0; padding: 10px; border-radius: 4px; background-color: #ffebee;"></div>
+            </div>
+            <form id="contactForm" onsubmit="return submitForm(event)">
+                <div class="form-group">
+                    <label for="name">Name / 姓名: *</label>
+                    <input type="text" id="name" name="name" 
+                           placeholder="Enter your name / 输入您的姓名" 
+                           required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email / 邮箱: *</label>
+                    <input type="email" id="email" name="email" 
+                           placeholder="Enter your email / 输入您的邮箱"
+                           pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+                           title="Please enter a valid email address"
+                           required>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone / 电话:</label>
+                    <input type="tel" id="phone" name="phone" 
+                           placeholder="Enter your phone number / 输入您的电话号码"
+                           pattern="[\d\s\-+()]{5,20}"
+                           title="Please enter a valid phone number">
+                </div>
+                <div class="form-group">
+                    <label for="message">Message / 留言: *</label>
+                    <textarea id="message" name="message" 
+                            placeholder="Enter your message / 输入您的留言"
+                            required></textarea>
+                </div>
+                <!-- Hidden honeypot field to catch bots -->
+                <div class="form-group" style="display:none">
+                    <input type="text" id="honeypot" name="honeypot">
+                </div>
+                <button type="submit" class="submit-btn">
+                    <span>Send Message / 发送消息</span>
+                    <div class="loader hidden"></div>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const modal = document.getElementById('contactModal');
+        const btn = document.getElementById('contactBtn');
+        const span = document.getElementsByClassName('close')[0];
+        const formError = document.getElementById('formError');
+        
+        btn.onclick = function() {
+            modal.classList.add('show');
+            formError.style.display = 'none';
+            formError.textContent = '';
+        }
+        
+        span.onclick = function() {
+            modal.classList.remove('show');
+        }
+        
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.classList.remove('show');
+            }
+        }
+
+        function showError(message) {
+            formError.textContent = message;
+            formError.style.display = 'block';
+        }
+
+        function clearError() {
+            formError.style.display = 'none';
+            formError.textContent = '';
+        }
+
+        function submitForm(event) {
+            event.preventDefault();
+            
+            const submitBtn = document.querySelector('.submit-btn');
+            const loader = document.querySelector('.loader');
+            const btnText = submitBtn.querySelector('span');
+            
+            clearError();
+            
+            loader.classList.remove('hidden');
+            btnText.classList.add('hidden');
+            submitBtn.disabled = true;
+
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const message = document.getElementById('message').value;
+            const honeypot = document.getElementById('honeypot').value;
+            
+            fetch('/send-email', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name,
+                    email,
+                    phone,
+                    message,
+                    honeypot
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('contactForm').reset();
+                    modal.classList.remove('show');
+                } else {
+                    showError(data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showError('An error occurred. Please try again later. / 发生错误，请稍后重试。');
+            })
+            .finally(() => {
+                loader.classList.add('hidden');
+                btnText.classList.remove('hidden');
+                submitBtn.disabled = false;
+            });
+        }
+    </script>
+</body>
+</html> 

@@ -1,0 +1,287 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #e6f2ff;
+    line-height: 1.6;
+}
+
+.header {
+    background-color: #e6f2ff;
+    padding: 20px;
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sale-badge {
+    width: 100px;
+    height: 100px;
+    background-color: #333;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 24px;
+}
+
+.header-content {
+    text-align: right;
+}
+
+.main-content {
+    background-color: #0099ff;
+    color: white;
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.main-content h2 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+}
+
+#contactBtn {
+    background-color: #00ffff;
+    color: #333;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1em;
+}
+
+.stats {
+    display: flex;
+    justify-content: center;
+    gap: 100px;
+    padding: 40px 20px;
+    background-color: #e6f2ff;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-item h3 {
+    font-size: 2.5em;
+    color: #333;
+}
+
+.footer {
+    display: flex;
+    justify-content: space-around;
+    padding: 40px 20px;
+    background-color: #e6f2ff;
+}
+
+.more-domains ul {
+    list-style: none;
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+}
+
+.modal.show {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background-color: white;
+    margin: auto;
+    padding: 30px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.form-header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.form-header h2 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.form-header p {
+    color: #666;
+    font-size: 0.9em;
+}
+
+.close {
+    position: absolute;
+    right: 20px;
+    top: 15px;
+    font-size: 28px;
+    cursor: pointer;
+    color: #999;
+    transition: color 0.3s;
+}
+
+.close:hover {
+    color: #333;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #555;
+    font-weight: 500;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1em;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #0099ff;
+    box-shadow: 0 0 0 3px rgba(0,153,255,0.1);
+}
+
+.form-group textarea {
+    height: 120px;
+    resize: vertical;
+    min-height: 120px;
+    max-height: 300px;
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 14px;
+    background-color: #0099ff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.1em;
+    cursor: pointer;
+    position: relative;
+    transition: background-color 0.3s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.submit-btn:hover {
+    background-color: #0077cc;
+}
+
+.submit-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.loader {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.hidden {
+    display: none;
+}
+
+.chinese-text {
+    font-size: 0.95em;
+    color: #666;
+    margin-top: 5px;
+}
+
+.subtitle {
+    font-size: 1.2em;
+    color: #666;
+    margin-top: 5px;
+}
+
+.main-content .chinese-text {
+    color: #fff;
+    font-size: 1.5em;
+    margin-bottom: 20px;
+}
+
+.stat-item .chinese-text {
+    margin-top: 0;
+}
+
+@media (max-width: 768px) {
+    .stats {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .footer {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .more-domains {
+        margin-bottom: 20px;
+    }
+    
+    .modal-content {
+        margin: 0 15px;
+        padding: 20px;
+        width: 100%;
+    }
+    
+    .chinese-text {
+        font-size: 0.9em;
+    }
+    
+    .main-content .chinese-text {
+        font-size: 1.3em;
+    }
+} 

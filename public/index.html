@@ -78,7 +78,7 @@
                     <label for="email">Email / 邮箱: *</label>
                     <input type="email" id="email" name="email" 
                            placeholder="Enter your email / 输入您的邮箱"
-                           pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
+                           pattern="[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}"
                            title="Please enter a valid email address"
                            required>
                 </div>
@@ -152,23 +152,21 @@
             btnText.classList.add('hidden');
             submitBtn.disabled = true;
 
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const phone = document.getElementById('phone').value;
-            const message = document.getElementById('message').value;
-            const honeypot = document.getElementById('honeypot').value;
+            // 获取当前域名和协议
+            const baseUrl = window.location.origin;
             
-            fetch('/send-email', {
+            // 使用完整的 URL 路径
+            fetch(`${baseUrl}/send-email`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    name,
-                    email,
-                    phone,
-                    message,
-                    honeypot
+                    name: document.getElementById('name').value,
+                    email: document.getElementById('email').value,
+                    phone: document.getElementById('phone').value,
+                    message: document.getElementById('message').value,
+                    honeypot: document.getElementById('honeypot').value
                 })
             })
             .then(response => response.json())

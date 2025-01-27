@@ -5,13 +5,29 @@ const { google } = require('googleapis');
 const rateLimit = require('express-rate-limit');
 require('dotenv').config();  // 加载.env文件
 const app = express();
+const path = require('path');
 
 // 禁用 punycode 警告
 process.removeAllListeners('warning');
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static('public')); // 存放你的HTML和CSS文件
+
+// 修改静态文件服务配置
+app.use(express.static('public')); 
+
+// 添加根路由处理
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// 添加 404 处理
+app.use((req, res) => {
+    res.status(404).json({ 
+        success: false, 
+        message: 'Route not found / 路由未找到' 
+    });
+});
 
 // 配置 OAuth2
 const oauth2Client = new google.auth.OAuth2(
@@ -61,8 +77,8 @@ async function verifyTransporter() {
 
 // 创建限速器
 const limiter = rateLimit({
-    windowMs: 60 * 60 * 1000,  // 1小时
-    max: 20,                    // 每个IP每小时可以发送20次
+    windowMs: 15 * 60 * 1000,  // 15分钟
+    max: 100,                   // 更大的请求次数限制
     message: { 
         success: false, 
         message: 'Too many requests. Please try again in 1 hour. / 请求次数过多，请1小时后再试。' 
@@ -143,6 +159,15 @@ app.post('/send-email', async (req, res) => {
             message: 'Failed to send email / 发送邮件失败，请稍后重试' 
         });
     }
+});
+
+// 错误处理中间件
+app.use((err, req, res, next) => {
+    console.error('Server error:', err);
+    res.status(500).json({ 
+        success: false, 
+        message: 'Internal server error / 服务器内部错误' 
+    });
 });
 
 const PORT = process.env.PORT || 3000;

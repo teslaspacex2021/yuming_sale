@@ -21,75 +21,10 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// 添加 404 处理
-app.use((req, res) => {
-    res.status(404).json({ 
-        success: false, 
-        message: 'Route not found / 路由未找到' 
-    });
-});
-
-// 配置 OAuth2
-const oauth2Client = new google.auth.OAuth2(
-    process.env.GOOGLE_CLIENT_ID,
-    process.env.GOOGLE_CLIENT_SECRET,
-    process.env.GOOGLE_REDIRECT_URI
-);
-
-oauth2Client.setCredentials({
-    refresh_token: process.env.GOOGLE_REFRESH_TOKEN
-});
-
-// 配置SMTP邮件发送
-async function createTransporter() {
-    try {
-        const accessToken = await oauth2Client.getAccessToken();
-        
-        return nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                type: 'OAuth2',
-                user: process.env.MAIL_USER,
-                clientId: process.env.GOOGLE_CLIENT_ID,
-                clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-                refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
-                accessToken: accessToken.token
-            }
-        });
-    } catch (error) {
-        console.error('Error creating transporter:', error);
-        throw error;
-    }
-}
-
-// 验证邮件配置
-async function verifyTransporter() {
-    try {
-        const transporter = await createTransporter();
-        await transporter.verify();
-        console.log('SMTP connection established successfully');
-        return transporter;
-    } catch (error) {
-        console.error('SMTP verification failed:', error);
-        throw error;
-    }
-}
-
-// 创建限速器
-const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000,  // 15分钟
-    max: 100,                   // 更大的请求次数限制
-    message: { 
-        success: false, 
-        message: 'Too many requests. Please try again in 1 hour. / 请求次数过多，请1小时后再试。' 
-    },
-    standardHeaders: true,      // 返回 `RateLimit-*` 头信息
-    legacyHeaders: false,       // 禁用 `X-RateLimit-*` 头信息
-});
-
 // 应用限速器到发送邮件的路由
 app.use('/send-email', limiter);
 
+// 发送邮件的路由
 app.post('/send-email', async (req, res) => {
     try {
         const { name, email, phone, message, honeypot } = req.body;
@@ -159,6 +94,74 @@ app.post('/send-email', async (req, res) => {
             message: 'Failed to send email / 发送邮件失败，请稍后重试' 
         });
     }
+});
+
+// 404 处理 - 放在所有路由之后
+app.use((req, res) => {
+    res.status(404).json({ 
+        success: false, 
+        message: 'Route not found / 路由未找到' 
+    });
+});
+
+// 配置 OAuth2
+const oauth2Client = new google.auth.OAuth2(
+    process.env.GOOGLE_CLIENT_ID,
+    process.env.GOOGLE_CLIENT_SECRET,
+    process.env.GOOGLE_REDIRECT_URI
+);
+
+oauth2Client.setCredentials({
+    refresh_token: process.env.GOOGLE_REFRESH_TOKEN
+});
+
+// 配置SMTP邮件发送
+async function createTransporter() {
+    try {
+        // 自动获取新的 access token
+        const accessToken = await oauth2Client.getAccessToken();
+        
+        return nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                type: 'OAuth2',
+                user: process.env.MAIL_USER,
+                clientId: process.env.GOOGLE_CLIENT_ID,
+                clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+                refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
+                // 使用自动获取的 access token
+                accessToken: accessToken.token
+            }
+        });
+    } catch (error) {
+        console.error('Error creating transporter:', error);
+        throw error;
+    }
+}
+
+// 验证邮件配置
+async function verifyTransporter() {
+    try {
+        const transporter = await createTransporter();
+        await transporter.verify();
+        console.log('SMTP connection established successfully');
+        return transporter;
+    } catch (error) {
+        console.error('SMTP verification failed:', error);
+        throw error;
+    }
+}
+
+// 创建限速器
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000,  // 15分钟
+    max: 100,                   // 更大的请求次数限制
+    message: { 
+        success: false, 
+        message: 'Too many requests. Please try again in 1 hour. / 请求次数过多，请1小时后再试。' 
+    },
+    standardHeaders: true,      // 返回 `RateLimit-*` 头信息
+    legacyHeaders: false,       // 禁用 `X-RateLimit-*` 头信息
 });
 
 // 错误处理中间件

@@ -107,9 +107,66 @@
         </div>
     </div>
 
-    <div id="successMessage" class="success-message">
+    <div id="successMessage" style="
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(40, 167, 69, 0.95);
+        color: white;
+        padding: 20px 30px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        z-index: 2000;
+        text-align: center;
+        font-size: 16px;
+    ">
         Message sent successfully! / 消息发送成功！
     </div>
+
+    <style>
+        /* 添加动画样式 */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -60%);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+            to {
+                opacity: 0;
+                transform: translate(-50%, -60%);
+            }
+        }
+
+        #successMessage.show {
+            display: block !important;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        #successMessage.fade-out {
+            animation: fadeOut 0.3s ease-in-out forwards;
+        }
+
+        /* 移动端适配 */
+        @media (max-width: 768px) {
+            #successMessage {
+                width: 80% !important;
+                padding: 15px 20px !important;
+                font-size: 14px !important;
+            }
+        }
+    </style>
 
     <script>
         const modal = document.getElementById('contactModal');
@@ -146,12 +203,13 @@
         function showSuccess() {
             const successMessage = document.getElementById('successMessage');
             successMessage.style.display = 'block';
+            successMessage.classList.add('show');
             
             setTimeout(() => {
                 successMessage.classList.add('fade-out');
                 setTimeout(() => {
                     successMessage.style.display = 'none';
-                    successMessage.classList.remove('fade-out');
+                    successMessage.classList.remove('show', 'fade-out');
                 }, 300);
             }, 3000);
         }

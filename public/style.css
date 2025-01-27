@@ -256,23 +256,6 @@ body {
     margin-top: 0;
 }
 
-/* 成功消息样式 */
-.success-message {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: rgba(40, 167, 69, 0.95);
-    color: white;
-    padding: 20px 30px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    z-index: 2000;
-    text-align: center;
-    animation: fadeIn 0.3s ease-in-out;
-}
-
 /* 移动端适配 */
 @media (max-width: 768px) {
     .stats {
@@ -302,36 +285,4 @@ body {
     .main-content .chinese-text {
         font-size: 1.3em;
     }
-    
-    .success-message {
-        width: 80%;
-        padding: 15px 20px;
-        font-size: 14px;
-    }
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translate(-50%, -60%);
-    }
-    to {
-        opacity: 1;
-        transform: translate(-50%, -50%);
-    }
-}
-
-@keyframes fadeOut {
-    from {
-        opacity: 1;
-        transform: translate(-50%, -50%);
-    }
-    to {
-        opacity: 0;
-        transform: translate(-50%, -60%);
-    }
-}
-
-.success-message.fade-out {
-    animation: fadeOut 0.3s ease-in-out forwards;
 } 

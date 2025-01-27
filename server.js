@@ -247,8 +247,14 @@ async function testGmailAPI() {
     }
 }
 
+// 修改端口配置，让它在本地开发和生产环境都能正常工作
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, async () => {
-    console.log(`Server running on port ${PORT}`);
+    // 在生产环境中不显示端口信息
+    if (process.env.NODE_ENV === 'production') {
+        console.log('Server running in production mode');
+    } else {
+        console.log(`Server running on port ${PORT}`);
+    }
     await testGmailAPI();
 }); 

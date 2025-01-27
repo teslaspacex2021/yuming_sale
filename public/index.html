@@ -107,6 +107,10 @@
         </div>
     </div>
 
+    <div id="successMessage" class="success-message">
+        Message sent successfully! / 消息发送成功！
+    </div>
+
     <script>
         const modal = document.getElementById('contactModal');
         const btn = document.getElementById('contactBtn');
@@ -139,6 +143,19 @@
             formError.textContent = '';
         }
 
+        function showSuccess() {
+            const successMessage = document.getElementById('successMessage');
+            successMessage.style.display = 'block';
+            
+            setTimeout(() => {
+                successMessage.classList.add('fade-out');
+                setTimeout(() => {
+                    successMessage.style.display = 'none';
+                    successMessage.classList.remove('fade-out');
+                }, 300);
+            }, 3000);
+        }
+
         function submitForm(event) {
             event.preventDefault();
             
@@ -152,10 +169,8 @@
             btnText.classList.add('hidden');
             submitBtn.disabled = true;
 
-            // 获取当前域名和协议
             const baseUrl = window.location.origin;
             
-            // 使用完整的 URL 路径
             fetch(`${baseUrl}/send-email`, {
                 method: 'POST',
                 headers: {
@@ -174,6 +189,7 @@
                 if (data.success) {
                     document.getElementById('contactForm').reset();
                     modal.classList.remove('show');
+                    showSuccess();
                 } else {
                     showError(data.message);
                 }

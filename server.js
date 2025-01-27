@@ -222,37 +222,19 @@ oauth2Client.on('tokens', (tokens) => {
     console.log('Access token refreshed');
 });
 
-// 修改测试函数以添加更好的错误处理
+// 修改测试函数，只验证认证配置
 async function testGmailAPI() {
     try {
         console.log('Testing Gmail API configuration...');
         const gmail = google.gmail({ version: 'v1', auth: oauth2Client });
         
-        // 首先测试认证
+        // 只测试认证，获取用户信息
         await oauth2Client.getAccessToken();
-        console.log('OAuth2 authentication successful');
-        
-        // 测试发送一封邮件
-        const testEmailContent = `From: "Test" <${process.env.MAIL_USER}>
-To: ${process.env.RECEIVER_EMAIL}
-Subject: API Test Email
-
-This is a test email from the Gmail API.`;
-
-        const encodedEmail = Buffer.from(testEmailContent)
-            .toString('base64')
-            .replace(/\+/g, '-')
-            .replace(/\//g, '_')
-            .replace(/=+$/, '');
-
-        const result = await gmail.users.messages.send({
-            userId: 'me',
-            requestBody: {
-                raw: encodedEmail
-            }
+        const profile = await gmail.users.getProfile({
+            userId: 'me'
         });
-
-        console.log('Gmail API test successful. Message ID:', result.data.id);
+        
+        console.log('Gmail API test successful. Connected as:', profile.data.emailAddress);
         return true;
     } catch (error) {
         console.error('Gmail API test failed:', {
